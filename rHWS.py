@@ -23,7 +23,7 @@ def get_recent_posts():
 checks if submission contains any one of the keywords and then returns list of
 all matching keywords.
 '''
-def matches_keyword(text, keywords):
+def find_keywords(text, keywords):
     matches = []
     for word in keywords:
         if text.count(word):
@@ -31,14 +31,16 @@ def matches_keyword(text, keywords):
     return matches
 
 '''
-Pull out posts that match search criteria
+Given a list of posts, find posts that match search criteria and return as list
+of tuples containing matched posts and the keywords on which they match
 '''
 def match_posts(posts, keywords):
 
     matches = []
     for submission in posts:
-        if matches_keyword(submission.title, keywords):
-            matches.append(submission)
+        found_words = find_keywords(submission.title, keywords)
+            if len(found_words) > 0:
+                matches.append((submission,found_words))
 
     return matches
 
@@ -73,7 +75,7 @@ if __name__ == "__main__":
     # Create stream and view each new post
     # Check for keywords and if found save details somewhere ad notify
     # want to note: post title, time, author, and link
-    # Also TODO: put matches_keyword outside of match_posts
+    # Also TODO: put find_keywords outside of match_posts
 
     # OLD MAIN #
     #new = subreddit.new(limit=100)
