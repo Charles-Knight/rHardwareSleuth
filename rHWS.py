@@ -73,12 +73,8 @@ if __name__ == "__main__":
     subreddit = reddit.subreddit(sub)
 
     # Create stream and view each new post
+    for submission in subreddit.stream.submissions():
+        print(submission.title)
     # Check for keywords and if found save details somewhere ad notify
     # want to note: post title, time, author, and link
     # Also TODO: put find_keywords outside of match_posts
-
-    # OLD MAIN #
-    #new = subreddit.new(limit=100)
-    #matching = match_posts(new, keywords)
-
-    #print_posts(matching)
