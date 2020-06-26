@@ -62,7 +62,14 @@ if __name__ == "__main__":
 
     reddit = praw.Reddit('bot1')
     subreddit = reddit.subreddit(sub)
-    new = subreddit.new(limit=100)
-    matching = match_posts(new, keywords)
 
-    print_posts(matching)
+    # Create stream and view each new post
+    # Check for keywords and if found save details somewhere ad notify
+    # want to note: post title, time, author, and link
+    # Also TODO: put matches_keyword outside of match_posts
+
+    # OLD MAIN #
+    #new = subreddit.new(limit=100)
+    #matching = match_posts(new, keywords)
+
+    #print_posts(matching)
