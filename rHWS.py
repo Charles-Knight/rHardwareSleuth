@@ -53,8 +53,10 @@ def print_posts(posts):
 '''
 Notify user
 '''
-def notify():
-    pass
+def notify(title, message):
+    os.system("""
+              osascript -e 'display notification "{}" with title "{}"'
+              """.format(text, title))
 
 if __name__ == "__main__":
     sub = "hardwareswap"
