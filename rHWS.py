@@ -20,18 +20,20 @@ def get_recent_posts():
     pass
 
 '''
+checks if submission contains any one of the keywords and then returns list of
+all matching keywords.
+'''
+def matches_keyword(text, keywords):
+    matches = []
+    for word in keywords:
+        if text.count(word):
+            matches.append(word)
+    return matches
+
+'''
 Pull out posts that match search criteria
 '''
 def match_posts(posts, keywords):
-
-    '''
-    checks if submission contains any one of the keywords
-    '''
-    def matches_keyword(text, keywords):
-        for word in keywords:
-            if text.count(word):
-                return True
-        return False
 
     matches = []
     for submission in posts:
@@ -52,6 +54,9 @@ def print_posts(posts):
 
 '''
 Notify user
+Simple notification method. Currently just creates an apple script notifcation
+to notify on macOS.
+TODO: extend with other functionality - email? system notifications? sms?
 '''
 def notify(title, message):
     os.system("""
