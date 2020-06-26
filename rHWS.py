@@ -39,8 +39,8 @@ def match_posts(posts, keywords):
     matches = []
     for submission in posts:
         found_words = find_keywords(submission.title, keywords)
-            if len(found_words) > 0:
-                matches.append((submission,found_words))
+        if len(found_words) > 0:
+            matches.append((submission,found_words))
 
     return matches
 
