@@ -14,7 +14,7 @@ me with a greater learning experience.
 import praw, sys, os
 
 '''
-checks if submission contains any one of the keywords and then returns list of
+Checks if submission contains any one of the keywords and then returns list of
 all matching keywords.
 '''
 def find_keywords(text, keywords):
@@ -41,33 +41,40 @@ def match_posts(posts, keywords):
 
 '''
 Notify user
-Simple notification method. Currently just creates an apple script notifcation
-to notify on macOS and outputs to terminal.
-TODO: extend with other functionality - email? system notifications? sms? Need
-      to offer more info: title, author, time, link, (stretch prices parsed from
-      post body or title)
-'''
-def notify(post, words):
+Simple function to create system notificatoins. Currently just creates an apple
+script notifcation that isn't super useful.
 
+TODO:
+* would be cool if I could interact with them. Click them to open the url of
+  the post being presented.
+* Implement notification for other systems? Windows, Gnome, etc...
+'''
+def sys_notification(post, words):
+    if sys.platform.startswith('darwin'):
+        os.system("""
+                  osascript -e 'display notification "{}" with title "New post matching {}"'
+                  """.format(post.title, ", ".join(words)))
+
+'''
+Send email to user for new posts.
+'''
+def email_notification():
+    pass
+    # Send an email to user
+
+'''
+Just prints new posts to the terminal
+'''
+def print_matches(post, words):
     # Print to terminal
     print(post.title + " was posted by " + post.author.name)
     print("Matches: ",end="")
     print(', '.join(words))
     print("Link: ", post.url)
 
-    # System notification
-    if sys.platform.startswith('darwin'):
-        os.system("""
-                  osascript -e 'display notification "{}" with title "New post matching {}"'
-                  """.format(post.title, ", ".join(words)))
-
-    # Send an email to user
-
-
 def main():
     sub = "hardwareswap"
     keywords = ["RTX","DDR4","IPS"]
-
     reddit = praw.Reddit('bot1')
     subreddit = reddit.subreddit(sub)
 
@@ -78,7 +85,8 @@ def main():
         # want to note: post title, time, author, and link
         matched_words = find_keywords(submission.title, keywords)
         if len(matched_words) > 0:
-            notify(submission, matched_words)
+            print_matches(submission, matched_words)
+            sys_notification(submission, matched_words)
 
 if __name__ == "__main__":
     main()
