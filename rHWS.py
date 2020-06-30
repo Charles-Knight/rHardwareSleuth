@@ -62,18 +62,19 @@ TODO: extend with other functionality - email? system notifications? sms? Need
       to offer more info: title, author, time, link, (stretch prices parsed from
       post body or title)
 '''
-def notify(post_title, message, words):
+def notify(post, words):
 
-    print(post_title)
+    print(post.title + " was posted by " + post.author.name)
     print("Matches: ",end="")
     print(', '.join(words))
+    print("Link: ", post.url)
 
     if sys.platform.startswith('darwin'):
         os.system("""
                   osascript -e 'display notification "{}" with title "New post matching {}"'
-                  """.format(post_title, ", ".join(words)))
+                  """.format(post.title, ", ".join(words)))
 
-if __name__ == "__main__":
+def main():
     sub = "hardwareswap"
     keywords = ["RTX","DDR4","IPS"]
 
@@ -87,4 +88,7 @@ if __name__ == "__main__":
         # want to note: post title, time, author, and link
         matched_words = find_keywords(submission.title, keywords)
         if len(matched_words) > 0:
-            notify(submission.title, "", matched_words)
+            notify(submission, matched_words)
+
+if __name__ == "__main__":
+    main()
