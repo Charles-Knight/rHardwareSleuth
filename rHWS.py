@@ -14,12 +14,6 @@ me with a greater learning experience.
 import praw, sys, os
 
 '''
-Get new posts from targeted subreddit
-'''
-def get_recent_posts():
-    pass
-
-'''
 checks if submission contains any one of the keywords and then returns list of
 all matching keywords.
 '''
@@ -33,6 +27,7 @@ def find_keywords(text, keywords):
 '''
 Given a list of posts, find posts that match search criteria and return as list
 of tuples containing matched posts and the keywords on which they match
+Note used in current implementation of program
 '''
 def match_posts(posts, keywords):
 
@@ -44,16 +39,6 @@ def match_posts(posts, keywords):
 
     return matches
 
-
-'''
-Display posts
-'''
-def print_posts(posts):
-    for submission in posts:
-        print(submission.title)
-        print("Score: " + str(submission.score))
-        print()
-
 '''
 Notify user
 Simple notification method. Currently just creates an apple script notifcation
@@ -64,15 +49,20 @@ TODO: extend with other functionality - email? system notifications? sms? Need
 '''
 def notify(post, words):
 
+    # Print to terminal
     print(post.title + " was posted by " + post.author.name)
     print("Matches: ",end="")
     print(', '.join(words))
     print("Link: ", post.url)
 
+    # System notification
     if sys.platform.startswith('darwin'):
         os.system("""
                   osascript -e 'display notification "{}" with title "New post matching {}"'
                   """.format(post.title, ", ".join(words)))
+
+    # Send an email to user
+
 
 def main():
     sub = "hardwareswap"
