@@ -57,6 +57,7 @@ def sys_notification(post, words):
 
 '''
 Send email to user for new posts.
+TODO: Implement this
 '''
 def email_notification():
     pass
