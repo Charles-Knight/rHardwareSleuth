@@ -11,7 +11,24 @@ reddit API, not because its a better way to do this, but because it will provide
 me with a greater learning experience.
 '''
 
-import praw, sys, os
+import praw, configparser, sys, os
+
+def configure():
+    pass
+
+'''
+load_config pulls in configuration from config file. If no config file is
+present we should call function to configure program and then save configuration
+to a file.
+'''
+def load_config(file = ""):
+    config =  configparser.RawConfigParser()
+    if file == "":
+        config = configure()
+    else:
+
+        config.read(file)
+    return config
 
 '''
 Checks if submission contains any one of the keywords and then returns list of
@@ -27,7 +44,7 @@ def find_keywords(text, keywords):
 '''
 Given a list of posts, find posts that match search criteria and return as list
 of tuples containing matched posts and the keywords on which they match
-Note used in current implementation of program
+Not used in current implementation of program
 '''
 def match_posts(posts, keywords):
 
@@ -74,8 +91,9 @@ def print_matches(post, words):
     print("Link: ", post.url)
 
 def main():
-    sub = "hardwareswap"
-    keywords = ["RTX","DDR4","IPS"]
+    config = load_config('rHWS.cfg')
+    sub = config.get('query','sub')
+    keywords = config.get('query','keywords').split(',')
     reddit = praw.Reddit('bot1')
     subreddit = reddit.subreddit(sub)
 
