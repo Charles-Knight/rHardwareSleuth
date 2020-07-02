@@ -94,6 +94,8 @@ def main():
     config = load_config('rHWS.cfg')
     sub = config.get('query','sub')
     keywords = config.get('query','keywords').split(',')
+    sys_notif = config.getboolean('notifications','sys_notif')
+
     reddit = praw.Reddit('bot1')
     subreddit = reddit.subreddit(sub)
 
@@ -105,7 +107,8 @@ def main():
         matched_words = find_keywords(submission.title, keywords)
         if len(matched_words) > 0:
             print_matches(submission, matched_words)
-            sys_notification(submission, matched_words)
+            if sys_notif:
+                sys_notification(submission, matched_words)
 
 if __name__ == "__main__":
     main()
