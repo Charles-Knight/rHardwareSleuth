@@ -14,6 +14,8 @@ me with a greater learning experience.
 import praw, configparser, sys, os
 
 def configure():
+    affirmative = ['true'.casefold(), 'yes'.casefold(), 't'.casefold(), 'y'.casefold(), '1'.casefold()]
+
     config =  configparser.RawConfigParser()
     config.add_section('email')
     config.add_section('notifications')
@@ -27,13 +29,13 @@ def configure():
     config.set('query', 'keywords', ','.join(keywords))
 
     response = input("Do you want to display system notifications? ")
-    if response.upper() in ['TRUE', 'YES', 'T', 'Y', '1']:
+    if response.casefold() in affirmative:
         config.set('notifications', 'sys_notif', 'True')
     else:
         config.set('notifications', 'sys_notif', 'False')
 
     response = input("Do you want email notifications? ")
-    if response.upper() in ['TRUE', 'YES', 'T', 'Y', '1']:
+    if response.casefold() in affirmative:
         config.set('notifications', 'email_notif', 'True')
     else:
         config.set('notifications', 'email_notif', 'False')
@@ -64,7 +66,7 @@ all matching keywords.
 def find_keywords(text, keywords):
     matches = []
     for word in keywords:
-        if text.count(word):
+        if text.casefold().count(word.casefold()):
             matches.append(word)
     return matches
 
