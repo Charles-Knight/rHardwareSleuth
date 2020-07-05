@@ -14,7 +14,26 @@ me with a greater learning experience.
 import praw, configparser, sys, os
 
 def configure():
-    pass
+    config =  configparser.RawConfigParser()
+    config.add_section('email')
+    config.add_section('notifications')
+    config.add_section('query')
+
+    sub = input("What sub would you like to monitor? (Do not include 'r/'): ")
+    config.set('query', 'sub', str(sub))
+
+    keywords = input("What words would you like to watch for (space separated): ")
+    keywords = keywords.split(' ')
+    config.set('query', 'keywords', ','.join(keywords))
+
+    # TODO: Make this optional.
+    config.set('notifications', 'sys_notif', 'True')
+    config.set('notifications', 'email_notif', 'False')
+
+    with open('rHWS.cfg', 'w') as configfile:
+       config.write(configfile)
+
+    return config
 
 '''
 load_config pulls in configuration from config file. If no config file is
@@ -22,11 +41,11 @@ present we should call function to configure program and then save configuration
 to a file.
 '''
 def load_config(file = ""):
-    config =  configparser.RawConfigParser()
-    if file == "":
+
+    if file == "" or not os.path.exists(file):
         config = configure()
     else:
-
+        config =  configparser.RawConfigParser()
         config.read(file)
     return config
 
