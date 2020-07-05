@@ -26,9 +26,17 @@ def configure():
     keywords = keywords.split(' ')
     config.set('query', 'keywords', ','.join(keywords))
 
-    # TODO: Make this optional.
-    config.set('notifications', 'sys_notif', 'True')
-    config.set('notifications', 'email_notif', 'False')
+    response = input("Do you want to display system notifications? ")
+    if response.upper() in ['TRUE', 'YES', 'T', 'Y', '1']:
+        config.set('notifications', 'sys_notif', 'True')
+    else:
+        config.set('notifications', 'sys_notif', 'False')
+
+    response = input("Do you want email notifications? ")
+    if response.upper() in ['TRUE', 'YES', 'T', 'Y', '1']:
+        config.set('notifications', 'email_notif', 'True')
+    else:
+        config.set('notifications', 'email_notif', 'False')
 
     with open('rHWS.cfg', 'w') as configfile:
        config.write(configfile)
