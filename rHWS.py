@@ -149,19 +149,19 @@ def print_matches(post, words):
     print("Link: ", post.url)
 
 def main():
+    # Load configuration
     config = load_config('rHWS.cfg')
     sub = config.get('query','sub')
     keywords = config.get('query','keywords').split(',')
     sys_notif = config.getboolean('notifications','sys_notif')
 
+    # Open subreddit
     reddit = praw.Reddit('bot1')
     subreddit = reddit.subreddit(sub)
 
     # Create stream and view each new post
     for submission in subreddit.stream.submissions():
-
         # Check for keywords and if found save details somewhere and notify
-        # want to note: post title, time, author, and link
         matched_words = find_keywords(submission.title, keywords)
         if len(matched_words) > 0:
             print_matches(submission, matched_words)
