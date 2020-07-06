@@ -13,6 +13,16 @@ me with a greater learning experience.
 
 import praw, configparser, sys, os
 
+'''
+configure - Allows user to interactively configure query. User will be prompted
+to choose a sub, a set of keywords, if they want to use system notifications
+and if they want to receive email notifications. Configuration is then saved to
+rHWS.cfg
+
+TO DO: Modify function take in file name as an argument so that the user can
+create and save multiple configurations. Alternatively, save the configuration
+elsewhere in the program and simply have this return the config.
+'''
 def configure():
     affirmative = ['true'.casefold(), 'yes'.casefold(), 't'.casefold(), 'y'.casefold(), '1'.casefold()]
 
@@ -46,9 +56,9 @@ def configure():
     return config
 
 '''
-load_config pulls in configuration from config file. If no config file is
-present we should call function to configure program and then save configuration
-to a file.
+load_config - Reads configuration from config file. If no config file is given
+or if the given file does not exist we call configure so that the user can
+interactively configure the program.
 '''
 def load_config(file = ""):
 
@@ -60,8 +70,14 @@ def load_config(file = ""):
     return config
 
 '''
-Checks if submission contains any one of the keywords and then returns list of
-all matching keywords.
+find_keywords - Checks is the submitted text contains any of the keywords and
+returns a list of any keywords found in the text.
+
+Notes: This function is currently just used to search submission titles for
+keywords but is written so that it simply takes in a string of text. Thus it
+could also be used to searck for keywords in the text bodies of submissions or
+probably even comments if the program were extended to include searching such
+things.
 '''
 def find_keywords(text, keywords):
     matches = []
@@ -71,9 +87,15 @@ def find_keywords(text, keywords):
     return matches
 
 '''
-Given a list of posts, find posts that match search criteria and return as list
-of tuples containing matched posts and the keywords on which they match
-Not used in current implementation of program
+match_posts - Given a list of posts, find posts that match search criteria
+and return as list of tuples containing matched posts and the keywords on which
+they match.
+
+Notes: Not used in current implementation of program. This function doesn't make
+sense with the current implementation of my search because the stream object
+being used in main returns a single submission at a time. Thus it is easier to
+work directly with find_keywords(). I'm keeping this here incase I ever finde a
+reason to use it, but it's on the short list of functions to be removed.
 '''
 def match_posts(posts, keywords):
 
@@ -86,14 +108,20 @@ def match_posts(posts, keywords):
     return matches
 
 '''
-Notify user
-Simple function to create system notificatoins. Currently just creates an apple
-script notifcation that isn't super useful.
+Notify user - Simple function to create system notificatoins. Currently just
+creates a notifcation via applescript and isn't super useful.
 
-TODO:
-* would be cool if I could interact with them. Click them to open the url of
+TO DO:
+* Would be cool if I could interact with them. Click them to open the url of
   the post being presented.
 * Implement notification for other systems? Windows, Gnome, etc...
+
+Notes: This function is slow. When not using system notifications submissions
+are processed and printed to terminal extremely quickly. With this function they
+come in slow enough to watch.
+
+It may be worth looking in to some way to interact more directly with the
+notification center API. Or perhaps I could start this in a separate thread?
 '''
 def sys_notification(post, words):
     if sys.platform.startswith('darwin'):
@@ -102,18 +130,19 @@ def sys_notification(post, words):
                   """.format(post.title, ", ".join(words)))
 
 '''
-Send email to user for new posts.
-TODO: Implement this
+email_notification - Send email to user for new posts.
+TO DO: Implement this
+Notes: Need to research how to automate email with python and figure out how I
+can securely enter and store email credentials. Should also consider how to
+implement this in a way that is safe for publicly publishing my code on github.
 '''
 def email_notification():
     pass
-    # Send an email to user
 
 '''
-Just prints new posts to the terminal
+print_matches - Just prints new posts to the terminal.
 '''
 def print_matches(post, words):
-    # Print to terminal
     print(post.title + " was posted by " + post.author.name)
     print("Matches: ",end="")
     print(', '.join(words))
