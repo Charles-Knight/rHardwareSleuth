@@ -11,7 +11,7 @@ reddit API, not because its a better way to do this, but because it will provide
 me with a greater learning experience.
 '''
 
-import praw, configparser, sys, os
+import praw, configparser, argparse, sys, os
 
 '''
 configure - Allows user to interactively configure query. User will be prompted
@@ -148,9 +148,9 @@ def print_matches(post, words):
     print(', '.join(words))
     print("Link: ", post.url)
 
-def main():
+def main(config_file="rHWS.cfg"):
     # Load configuration
-    config = load_config('rHWS.cfg')
+    config = load_config(config_file)
     sub = config.get('query','sub')
     keywords = config.get('query','keywords').split(',')
     sys_notif = config.getboolean('notifications','sys_notif')
@@ -169,4 +169,11 @@ def main():
                 sys_notification(submission, matched_words)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="A program to monitor your favorite subreddits")
+    parser.add_argument('-f', '--file', help="Config file to load, if file does not exist then it will be created")
+    args = parser.parse_args()
+
+    if args.file:
+        main(args.file)
+    else:
+        main()
