@@ -13,31 +13,23 @@ me with a greater learning experience.
 
 import praw, configparser, argparse, sys, os
 
-'''
-configure - Allows user to interactively configure query. User will be prompted
-to choose a sub, a set of keywords, if they want to use system notifications
-and if they want to receive email notifications. Configuration is then saved to
-rHWS.cfg
+def config_sub(config, sub = False):
+    if not sub:
+        sub = input("What sub would you like to monitor? (Do not include 'r/'): ")
+        config.set('query', 'sub', str(sub))
+    else:
+        config.set('query', 'sub', str(sub))
 
-TO DO: Modify function take in file name as an argument so that the user can
-create and save multiple configurations. Alternatively, save the configuration
-elsewhere in the program and simply have this return the config.
-'''
-def configure():
+def config_query(config, keywords = False):
+    if not keywords:
+        keywords = input("What words would you like to watch for (space separated): ")
+        keywords = keywords.split(' ')
+        config.set('query', 'keywords', ','.join(keywords))
+    else:
+        config.set('query', 'keywords', ','.join(keywords))
+
+def config_notif(config):
     affirmative = ['true'.casefold(), 'yes'.casefold(), 't'.casefold(), 'y'.casefold(), '1'.casefold()]
-
-    config =  configparser.RawConfigParser()
-    config.add_section('email')
-    config.add_section('notifications')
-    config.add_section('query')
-
-    sub = input("What sub would you like to monitor? (Do not include 'r/'): ")
-    config.set('query', 'sub', str(sub))
-
-    keywords = input("What words would you like to watch for (space separated): ")
-    keywords = keywords.split(' ')
-    config.set('query', 'keywords', ','.join(keywords))
-
     response = input("Do you want to display system notifications? ")
     if response.casefold() in affirmative:
         config.set('notifications', 'sys_notif', 'True')
@@ -50,9 +42,32 @@ def configure():
     else:
         config.set('notifications', 'email_notif', 'False')
 
-    with open('rHWS.cfg', 'w') as configfile:
+def create_empty_config():
+    config =  configparser.RawConfigParser()
+    config.add_section('email')
+    config.add_section('notifications')
+    config.add_section('query')
+    return config
+
+def write_config(config, file):
+    with open(file, 'w') as configfile:
        config.write(configfile)
 
+'''
+configure - Allows user to interactively configure query. User will be prompted
+to choose a sub, a set of keywords, if they want to use system notifications
+and if they want to receive email notifications. Configuration is then saved to
+rHWS.cfg
+
+TO DO: Modify function take in file name as an argument so that the user can
+create and save multiple configurations. Alternatively, save the configuration
+elsewhere in the program and simply have this return the config.
+'''
+def configure():
+    config = create_empty_config()
+    config_sub(config)
+    config_query(config)
+    config_notif(config)
     return config
 
 '''
@@ -60,10 +75,11 @@ load_config - Reads configuration from config file. If no config file is given
 or if the given file does not exist we call configure so that the user can
 interactively configure the program.
 '''
-def load_config(file = ""):
+def load_config(file):
 
-    if file == "" or not os.path.exists(file):
+    if not os.path.exists(file):
         config = configure()
+        write_config(config, file)
     else:
         config =  configparser.RawConfigParser()
         config.read(file)
@@ -148,12 +164,37 @@ def print_matches(post, words):
     print(', '.join(words))
     print("Link: ", post.url)
 
-def main(config_file="rHWS.cfg"):
+def main(args):
     # Load configuration
-    config = load_config(config_file)
-    sub = config.get('query','sub')
-    keywords = config.get('query','keywords').split(',')
-    sys_notif = config.getboolean('notifications','sys_notif')
+    #config = load_config(config_file)
+    #sub = config.get('query','sub')
+    #keywords = config.get('query','keywords').split(',')
+    #sys_notif = config.getboolean('notifications','sys_notif')
+
+    # If there is a file, we want to either load config from file or save the
+    # Saved the passed in query to the file (overwriting it if it exists)
+    if args.file:
+        config = load_config(args.file)
+
+        if args.sub:
+            sub = args.sub
+        else:
+            sub = config.get('query','sub')
+
+        if args.query:
+            keywords = args.query
+        else:
+            keywords = config.get('query','keywords').split(',')
+
+        sys_notif = config.getboolean('notifications','sys_notif')
+
+
+    # Otherwise we just want to run the query given in the arguments. If none
+    # are given then we will want use the interactive configuration
+    else:
+        sub = args.sub
+        keywords = args.query
+        sys_notif = True
 
     # Open subreddit
     reddit = praw.Reddit('bot1')
@@ -170,10 +211,10 @@ def main(config_file="rHWS.cfg"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="A program to monitor your favorite subreddits")
+    parser.add_argument('-r', '--sub', help="The subreddit you want to monitor")
+    parser.add_argument('-q', '--query', nargs='*', help="List of keywords you want to search for")
     parser.add_argument('-f', '--file', help="Config file to load, if file does not exist then it will be created")
     args = parser.parse_args()
 
-    if args.file:
-        main(args.file)
-    else:
-        main()
+    ### Maybe just pass args in to main and then process there?###
+    main(args)
