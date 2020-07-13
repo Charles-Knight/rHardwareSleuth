@@ -59,10 +59,6 @@ configure - Allows user to interactively configure query. User will be prompted
 to choose a sub, a set of keywords, if they want to use system notifications
 and if they want to receive email notifications. Configuration is then saved to
 rHWS.cfg
-
-TO DO: Modify function take in file name as an argument so that the user can
-create and save multiple configurations. Alternatively, save the configuration
-elsewhere in the program and simply have this return the config.
 '''
 def configure():
     config = create_empty_config()
@@ -166,12 +162,6 @@ def print_matches(post, words):
     print("Link: ", post.url)
 
 def main(args):
-    # Load configuration
-    #config = load_config(config_file)
-    #sub = config.get('query','sub')
-    #keywords = config.get('query','keywords').split(',')
-    #sys_notif = config.getboolean('notifications','sys_notif')
-
     # If there is a file, we want to either load config from file or save the
     # Saved the passed in query to the file (overwriting it if it exists)
     if args.file:
@@ -217,5 +207,4 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--file', help="Config file to load, if file does not exist then it will be created")
     args = parser.parse_args()
 
-    ### Maybe just pass args in to main and then process there?###
     main(args)
