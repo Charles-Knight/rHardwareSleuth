@@ -13,34 +13,35 @@ me with a greater learning experience.
 
 import praw, configparser, argparse, sys, os
 
-def config_sub(config, sub = False):
-    if not sub:
+def config_sub(config, sub = "", interactive = False):
+    if interactive:
         sub = input("What sub would you like to monitor? (Do not include 'r/'): ")
         config.set('query', 'sub', str(sub))
     else:
         config.set('query', 'sub', str(sub))
 
-def config_query(config, keywords = False):
-    if not keywords:
+def config_query(config, keywords = [], interactive = False):
+    if interactive:
         keywords = input("What words would you like to watch for (space separated): ")
         keywords = keywords.split(' ')
         config.set('query', 'keywords', ','.join(keywords))
     else:
         config.set('query', 'keywords', ','.join(keywords))
 
-def config_notif(config):
-    affirmative = ['true'.casefold(), 'yes'.casefold(), 't'.casefold(), 'y'.casefold(), '1'.casefold()]
-    response = input("Do you want to display system notifications? ")
-    if response.casefold() in affirmative:
-        config.set('notifications', 'sys_notif', 'True')
-    else:
-        config.set('notifications', 'sys_notif', 'False')
+def config_notif(config, sys = False, email = False, interactive = False):
+    affirmatives = ['true'.casefold(), 'yes'.casefold(), 't'.casefold(), 'y'.casefold(), '1'.casefold()]
+    
+    if interactive:
+        response = input("Do you want to display system notifications? ")
+        config.set('notifications', 'sys_notif', str(response.casefold() in affirmatives))
 
-    response = input("Do you want email notifications? ")
-    if response.casefold() in affirmative:
-        config.set('notifications', 'email_notif', 'True')
+        response = input("Do you want email notifications? ")
+        config.set('notifications', 'email_notif', str(response.casefold() in affirmatives))
+        
     else:
-        config.set('notifications', 'email_notif', 'False')
+        config.set('notifications', 'sys_notif', str(sys))
+        config.set('notifications', 'email_notif', str(email))
+
 
 def create_empty_config():
     config =  configparser.RawConfigParser()
@@ -65,9 +66,9 @@ elsewhere in the program and simply have this return the config.
 '''
 def configure():
     config = create_empty_config()
-    config_sub(config)
-    config_query(config)
-    config_notif(config)
+    config_sub(config, interactive=True)
+    config_query(config, interactive=True)
+    config_notif(config, interactive=True)
     return config
 
 '''
